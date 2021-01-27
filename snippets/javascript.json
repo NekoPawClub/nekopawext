@@ -1,0 +1,20 @@
+{
+    "fetch": {
+        "prefix": "fetch",
+        "body": [
+            "fetch('$1', {",
+            "    method: '${2:GET}',",
+            "});",
+            ""
+        ],
+        "description": "nekopaw 发送请求"
+    },
+    "queryText": {
+        "prefix": "queryText",
+        "body": [
+            "queryText('$1');",
+            ""
+        ],
+        "description": "nekopaw 获取css节点文本"
+    }
+}

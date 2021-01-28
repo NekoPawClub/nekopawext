@@ -56,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 				function sendJS() {
 					if (connection.connected && text) {
-						connection.sendUTF(';env_websoket = true;' + text + ';env_websoket = undefined;');
+						connection.sendUTF(';env_web_socket = true;' + text + ';env_web_socket = undefined;');
 					}
 				}
 				sendJS();

@@ -1,22 +1,24 @@
 
 const run_in_websoket = typeof env_websoket !== 'undefined'
 
-function prefixInteger(num, length) {
-    return (Array(length).join('0') + num).slice(-length);
-}
-
-function print(...args) {
-    if (run_in_websoket)
-        WebSocketPrint(`[${prefixInteger(new Date().valueOf() - reT, 4)}] ${args.join()} `)
-    else
-        console.info(args.join())
-}
-
 var reT = new Date().valueOf();
 search('读书')
 detail(baseObject.info.origin + baseObject.search[0].url)
 chapter(baseObject.detail.url)
 context(baseObject.info.origin + baseObject.chapter[0].url)
+
+function prefixInteger(num) {
+    let s = ('000000' + num).slice(-5);
+    return s.substring(0, 2) + '.' + s.slice(-3);
+}
+
+function print(...args) {
+    if (run_in_websoket)
+        WebSocketPrint(`[${prefixInteger(new Date().valueOf() - reT)}] ${args.join()} `)
+    else
+        console.info(args.join())
+}
+
 // 需要传递到外部的数据(必要)
 var baseObject = {
     info: {

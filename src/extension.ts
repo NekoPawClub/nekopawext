@@ -3,8 +3,6 @@
 import * as vscode from 'vscode';
 import { client as WebSocketClient } from 'websocket';
 
-// client.connect('ws://localhost:8080/', 'echo-protocol');
-
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -49,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 				});
 				connection.on('message', function (message) {
 					if (message.type === 'utf8') {
-						c.appendLine("Received: '" + message.utf8Data + "'");
+						c.appendLine(message.utf8Data ?? "");
 					}
 				});
 

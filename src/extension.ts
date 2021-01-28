@@ -58,7 +58,9 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 				sendJS();
 			});
-			client.connect('ws://192.168.1.146:52345/runJS', 'echo-protocol');
+			const address = text?.match(/ws:.*?runJS/)?.[0];
+			if (address)
+				client.connect(address, 'echo-protocol');
 		}),
 	]);
 }

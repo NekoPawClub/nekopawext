@@ -2,6 +2,8 @@
   "name": "nekopawext",
   "displayName": "NekoPawExt",
   "description": "",
+  "publisher": "mabdc",
+  "repository": "https://github.com/NekoPawClub/nekopawext",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.52.0"
@@ -15,8 +17,7 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
+    "commands": [{
         "command": "nekopawext.connectDevice",
         "title": "链接手机"
       },
@@ -30,27 +31,21 @@
       }
     ],
     "menus": {
-      "editor/title": [
-        {
-          "when": "editorFocus && resourceLangId == javascript",
-          "command": "nekopawext.runJS",
-          "group": "navigation"
-        }
-      ],
-      "editor/context": [
-        {
-          "when": "resourceLangId == javascript",
-          "command": "nekopawext.runJS",
-          "group": "navigation"
-        }
-      ]
+      "editor/title": [{
+        "when": "editorFocus && resourceLangId == javascript",
+        "command": "nekopawext.runJS",
+        "group": "navigation"
+      }],
+      "editor/context": [{
+        "when": "resourceLangId == javascript",
+        "command": "nekopawext.runJS",
+        "group": "navigation"
+      }]
     },
-    "snippets": [
-      {
-        "language": "javascript",
-        "path": "./snippets/javascript.json"
-      }
-    ]
+    "snippets": [{
+      "language": "javascript",
+      "path": "./snippets/javascript.json"
+    }]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

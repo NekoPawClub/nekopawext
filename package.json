@@ -15,33 +15,42 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [{
-      "command": "nekopawext.connectDevice",
-      "title": "链接手机"
-    }, {
-      "command": "nekopawext.runJS",
-      "title": "在nekopaw运行js",
-      "icon": {
-        "light": "./images/tool-light.svg",
-        "dark": "./images/tool-light.svg"
+    "commands": [
+      {
+        "command": "nekopawext.connectDevice",
+        "title": "链接手机"
+      },
+      {
+        "command": "nekopawext.runJS",
+        "title": "在nekopaw运行js",
+        "icon": {
+          "light": "./images/tool-light.svg",
+          "dark": "./images/tool-light.svg"
+        }
       }
-    }],
+    ],
     "menus": {
-      "editor/title": [{
-        "when": "editorFocus && resourceLangId == javascript",
-        "command": "nekopawext.runJS",
-        "group": "navigation"
-      }],
-      "editor/context": [{
-        "when": "resourceLangId == javascript",
-        "command": "nekopawext.runJS",
-        "group": "navigation"
-      }]
+      "editor/title": [
+        {
+          "when": "editorFocus && resourceLangId == javascript",
+          "command": "nekopawext.runJS",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "when": "resourceLangId == javascript",
+          "command": "nekopawext.runJS",
+          "group": "navigation"
+        }
+      ]
     },
-    "snippets": [{
-      "language": "javascript",
-      "path": "./snippets/javascript.json"
-    }]
+    "snippets": [
+      {
+        "language": "javascript",
+        "path": "./snippets/javascript.json"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -59,6 +68,7 @@
     "@types/mocha": "^8.0.4",
     "@types/node": "^12.11.7",
     "@types/vscode": "^1.52.0",
+    "@types/websocket": "^1.0.1",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
     "eslint": "^7.15.0",
@@ -69,5 +79,8 @@
     "vscode-test": "^1.4.1",
     "webpack": "^5.10.0",
     "webpack-cli": "^4.2.0"
+  },
+  "dependencies": {
+    "websocket": "^1.0.33"
   }
 }

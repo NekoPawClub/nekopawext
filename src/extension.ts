@@ -7,6 +7,7 @@ import { client as WebSocketClient } from 'websocket';
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "nekopawext" is now active!');
+	var c: vscode.OutputChannel;
 	context.subscriptions.push(...[
 		vscode.commands.registerCommand('nekopawext.connectDevice', (ip: String) => {
 			vscode.window.showQuickPick(
@@ -28,9 +29,11 @@ export function activate(context: vscode.ExtensionContext) {
 			let editor = vscode.window.activeTextEditor;
 			let text = editor?.document.getText();
 
-			const c = vscode.window.createOutputChannel("neko paw 调试信息");
-			c.show();
+			if (c == null) {
+				c = vscode.window.createOutputChannel("neko paw 调试信息");
+			}
 
+			c.show();
 			var client = new WebSocketClient();
 
 			client.on('connectFailed', function (error) {

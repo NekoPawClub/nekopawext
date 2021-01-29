@@ -126,11 +126,11 @@ function chapter(url) {
         // let bodyList = [];
         // for (let i = 1; i <= p; ++i) bodyList.push(`action=list&bid=${bid}&page=${i}`);
         // let bArr = fetch(`https://www.zhaishuyuan.com/api/`, {
-        // 	method: 'POST',
-        // 	headers: {
-        // 		'content-type': 'application/x-www-form-urlencoded'
-        // 	},
-        // 	bodys: bodyList
+        //     method: 'POST',
+        //     headers: {
+        //          'content-type': 'application/x-www-form-urlencoded'
+        //     },
+        //     bodys: bodyList
         // }).json();
         // bArr.forEach((b) => Array.prototype.push.apply(baseObject.chapter, b.data));
         // 并发请求

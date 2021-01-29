@@ -4,7 +4,7 @@
   "description": "",
   "publisher": "mabdc",
   "repository": "https://github.com/NekoPawClub/nekopawext",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.52.0"
   },
@@ -19,7 +19,7 @@
   "contributes": {
     "commands": [{
         "command": "nekopawext.connectDevice",
-        "title": "链接手机"
+        "title": "NekoPaw: 链接手机ip"
       },
       {
         "command": "nekopawext.runJS",

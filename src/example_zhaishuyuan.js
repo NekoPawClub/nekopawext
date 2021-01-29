@@ -1,4 +1,4 @@
-// 修改这里地址 ws://192.168.1.146:52345/runJS
+
 var run_in_websoket = typeof env_web_socket !== 'undefined'
 
 var reT = new Date().valueOf();

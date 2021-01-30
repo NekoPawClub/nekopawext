@@ -1,103 +1,86 @@
 // 模块"vscode"包含VSCode可扩展性API导入模块，并在下面的代码中使用别名vscode对其进行引用
 import * as vscode from 'vscode';
-import { client as WebSocketClient } from 'websocket';
+import { client as WebSocketClient, connection, w3cwebsocket } from 'websocket';
+
+
+function sleep (ms: number) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 // 当您的扩展程序被激活时，将调用此方法。
-export function activate(context: vscode.ExtensionContext) {
+export function activate (context: vscode.ExtensionContext) {
 	console.log('"NekoPawExt" 插件已激活');
-	var _c: vscode.OutputChannel;
-	var _ip: string | undefined;
+	var consoleLoger = vscode.window.createOutputChannel("NekoPow 调试信息");
+	var webSocketIP: string = vscode.workspace.getConfiguration().get('NekoPawExt.WebSocket.IP') ?? "";
+	var webSocketPORT: string = vscode.workspace.getConfiguration().get('NekoPawExt.WebSocket.PORT') ?? "8889";
+
+	var wsClient = new WebSocketClient();
+	var wsConnector: connection | undefined = undefined;
+	wsClient.addListener('connectFailed', (err) => {
+		vscode.window.showErrorMessage("链接失败，请确保'IP是正确'且'NekoPaw服务已开启'");
+		consoleLoger?.appendLine(`连接失败: ${err}`);
+		wsConnector = undefined;
+	});
+	wsClient.addListener('connect', (connection) => {
+		vscode.window.setStatusBarMessage(`NekoPawExt已连接到${webSocketIP}:${webSocketPORT}`);
+		consoleLoger.appendLine(`设备 ${webSocketIP}:${webSocketPORT} 连接成功`);
+		if (wsConnector == undefined) {
+			wsConnector = connection;
+			wsConnector.addListener('error', (err) => { consoleLoger.appendLine(`连接出错: ${err}`); });
+			wsConnector.addListener('close', () => {
+				consoleLoger.appendLine('连接已关闭');
+				wsConnector = undefined;
+			});
+			wsConnector.addListener('message', (message) => {
+				if (message.type === 'utf8') consoleLoger.appendLine(message.utf8Data ?? "");
+			});
+		}
+	});
+
 	context.subscriptions.push(...[
 		vscode.commands.registerCommand('nekopawext.connectDevice', () => {
-			vscode.window.showInputBox(
-				{ // 这个对象中所有参数都是可选参数
-					password: false, // 输入内容是否是密码
-					ignoreFocusOut: true, // 默认false，设置为true时鼠标点击别的地方输入框不会消失
-					placeHolder: '192.168.1.5', // 在输入框内的提示信息
-					prompt: '输入手机ip以链接', // 在输入框下方的提示信息
-					validateInput: function (ip) {
-						if (/^[0-9\.]+$/.test(ip)) {
-							return null;
-						}
-						return "IP格式不对 请输入形如`192.168.1.5`";
-					} // 对输入内容进行验证并返回
-				}).then(function (ip) {
-					if (_c == null) {
-						_c = vscode.window.createOutputChannel("neko paw 调试信息");
+			vscode.window.showInputBox({	// 这个对象中所有参数都是可选参数
+				password: false, 			// 输入内容是否是密码
+				ignoreFocusOut: true,		// 默认false，设置为true时鼠标点击别的地方输入框不会消失
+				placeHolder: '192.168.1.5',	// 在输入框内的提示信息
+				prompt: '输入手机IP进行连接',// 在输入框下方的提示信息
+				validateInput: (inputText) => {
+					if (/^[0-9\.]+$/.test(inputText)) {
+						return null;
 					}
-					_c.show();
-
-					var client = new WebSocketClient();
-					client.on('connectFailed', function (error) {
-						_c.appendLine('Connect Error: ' + error.toString());
-						vscode.window.showErrorMessage("链接失败，请检查IP或手机是否开启服务");
-					});
-					client.on('connect', function (connection) {
-						_ip = ip;
-						_c.appendLine(`设备 ${ip} 链接成功`);
-						vscode.window.showInformationMessage(`设备 ${ip} 链接成功`);
-
-						vscode.window.setStatusBarMessage(`已链接 ${ip}`);
-
-						connection.on('error', function (error) {
-							_c.appendLine("连接错误: " + error.toString());
-						});
-						connection.on('close', function () {
-							_c.appendLine('连接已关闭');
-						});
-						connection.on('message', function (message) {
-							if (message.type === 'utf8') {
-								_c.appendLine(message.utf8Data ?? "");
-							}
-						});
-					});
-					client.connect(`ws://${ip}:52345/runJS`, 'echo-protocol');
-				});
+					return "IP格式不对 请输入形如'192.168.1.5'";
+				} // 对输入内容进行验证并返回
+			}).then((ip) => {
+				consoleLoger.show();
+				webSocketIP = ip!!;
+				wsClient.connect(`ws://${webSocketIP}:${webSocketPORT}/runJS`, 'echo-protocol');
+			});
 		}),
 		vscode.commands.registerCommand('nekopawext.runJS', () => {
-			if (_c == null) {
-				_c = vscode.window.createOutputChannel("neko paw 调试信息");
-			}
-			_c.show();
-
-			if (!/^[0-9\.]+$/.test(_ip ?? "")) {
-				_c.appendLine("请先链接设备, 使用ctrl+shift+p再点击`NekoPaw: 链接手机ip`");
-				vscode.window.showInformationMessage("请先链接设备, 使用ctrl+shift+p再点击`NekoPaw: 链接手机ip`");
+			consoleLoger.show();
+			if (!/^[0-9\.]+$/.test(webSocketIP ?? "")) {
+				consoleLoger.appendLine(`请先连接设备, 使用"Ctrl+Shift+P"打开菜单, 再点击"NekoPaw: 链接手机IP"`);
 				return;
 			}
 
-			let editor = vscode.window.activeTextEditor;
-			let text = editor?.document.getText();
-
-			var client = new WebSocketClient();
-			client.on('connectFailed', function (error) {
-				_c.appendLine('Connect Error: ' + error.toString());
-			});
-
-			client.on('connect', function (connection) {
-				connection.on('error', function (error) {
-					_c.appendLine("连接出错: " + error.toString());
-				});
-				connection.on('close', function () {
-					_c.appendLine('连接已关闭');
-				});
-				connection.on('message', function (message) {
-					if (message.type === 'utf8') {
-						_c.appendLine(message.utf8Data ?? "");
-					}
-				});
-				function sendJS() {
-					if (connection.connected && text) {
-						_c.appendLine('--开始运行--');
-						connection.sendUTF(';env_web_socket = true;' + text + ';env_web_socket = undefined;');
+			let editText = vscode.window.activeTextEditor?.document.getText();
+			(async () => {
+				for (let i = 0; i < 3; ++i) {
+					if (wsConnector?.connected && editText) {
+						consoleLoger.appendLine('--开始运行--');
+						wsConnector.sendUTF(';env_web_socket = true;' + editText + ';env_web_socket = undefined;');
+						break;
+					} else {
+						wsClient.connect(`ws://${webSocketIP}:${webSocketPORT}/runJS`, 'echo-protocol');
+						await sleep(1000);
 					}
 				}
-				sendJS();
-			});
-			client.connect(`ws://${_ip}:52345/runJS`, 'echo-protocol');
+			})();
 		}),
 	]);
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() { }
+// 停用扩展程序时，将调用此方法
+export function deactivate () {
+
+}

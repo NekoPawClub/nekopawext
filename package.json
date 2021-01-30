@@ -4,7 +4,7 @@
 	"description": "在NekoPaw调试Javascript",
 	"publisher": "NekoPaw",
 	"repository": "https://github.com/NekoPawClub/nekopawext",
-	"version": "0.0.4",
+	"version": "0.0.6",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
@@ -19,7 +19,7 @@
 	"contributes": {
 		"configuration": {
 			"type": "object",
-			"title": "NekoPawExt 配置设置",
+			"title": "NekoPawExt设置",
 			"properties": {
 				"NekoPawExt.WebSocket.IP": {
 					"type": "string",
@@ -28,7 +28,7 @@
 				},
 				"NekoPawExt.WebSocket.PORT": {
 					"type": "string",
-					"default": "52345",
+					"default": "8889",
 					"description": "连接NekoPaw设备使用的服务端口"
 				}
 			}
@@ -36,7 +36,7 @@
 		"commands": [
 			{
 				"command": "nekopawext.connectDevice",
-				"title": "NekoPaw: 链接手机ip"
+				"title": "NekoPaw: 链接手机IP"
 			},
 			{
 				"command": "nekopawext.runJS",

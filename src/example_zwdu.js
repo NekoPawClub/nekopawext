@@ -106,13 +106,19 @@ function context(url) {
 	let response = fetch(url, { charset: 'gbk' });
 	let html = response.text();
 	let document = new Document(html);
-	baseObject.context = document
-		.querySelector('#content')
-		.textNodes()
-		.filter((w) => w)
-		.join(`\n　　`);
+	baseObject.context =
+		`    ` +
+		document
+			.querySelector('#content')
+			.textNodes()
+			.map((w) => w.trim())
+			.filter((w) => w && w.length > 1)
+			.join(`\n    `);
 	printLog(`正文解析完成\n${baseObject.context}`);
 }
 
 // 需要交给App调用的任务链(必要)
 step = [(sKey) => search(sKey), () => detail(baseObject.search[0].url), () => chapter(baseObject.detail.url), () => context(baseObject.info.origin + baseObject.chapter[0].url)];
+
+step[0]('修真');
+for (let i = 1; i < step.length; ++i) step[i]();

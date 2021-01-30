@@ -1,12 +1,10 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+// 模块"vscode"包含VSCode可扩展性API导入模块，并在下面的代码中使用别名vscode对其进行引用
 import * as vscode from 'vscode';
 import { client as WebSocketClient } from 'websocket';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+// 当您的扩展程序被激活时，将调用此方法。
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Congratulations, your extension "nekopawext" is now active!');
+	console.log('"NekoPawExt" 插件已激活');
 	var _c: vscode.OutputChannel;
 	var _ip: string | undefined;
 	context.subscriptions.push(...[
@@ -15,13 +13,13 @@ export function activate(context: vscode.ExtensionContext) {
 				{ // 这个对象中所有参数都是可选参数
 					password: false, // 输入内容是否是密码
 					ignoreFocusOut: true, // 默认false，设置为true时鼠标点击别的地方输入框不会消失
-					placeHolder: '192.168.1.146', // 在输入框内的提示信息
+					placeHolder: '192.168.1.5', // 在输入框内的提示信息
 					prompt: '输入手机ip以链接', // 在输入框下方的提示信息
 					validateInput: function (ip) {
 						if (/^[0-9\.]+$/.test(ip)) {
 							return null;
 						}
-						return "IP格式不对 请输入形如`192.168.1.146`";
+						return "IP格式不对 请输入形如`192.168.1.5`";
 					} // 对输入内容进行验证并返回
 				}).then(function (ip) {
 					if (_c == null) {
@@ -36,17 +34,16 @@ export function activate(context: vscode.ExtensionContext) {
 					});
 					client.on('connect', function (connection) {
 						_ip = ip;
-						_c.appendLine('WebSocket Client Connected');
 						_c.appendLine(`设备 ${ip} 链接成功`);
 						vscode.window.showInformationMessage(`设备 ${ip} 链接成功`);
 
 						vscode.window.setStatusBarMessage(`已链接 ${ip}`);
 
 						connection.on('error', function (error) {
-							_c.appendLine("Connection Error: " + error.toString());
+							_c.appendLine("连接错误: " + error.toString());
 						});
 						connection.on('close', function () {
-							_c.appendLine('echo-protocol Connection Closed');
+							_c.appendLine('连接已关闭');
 						});
 						connection.on('message', function (message) {
 							if (message.type === 'utf8') {
@@ -78,12 +75,11 @@ export function activate(context: vscode.ExtensionContext) {
 			});
 
 			client.on('connect', function (connection) {
-				_c.appendLine('WebSocket Client Connected');
 				connection.on('error', function (error) {
-					_c.appendLine("Connection Error: " + error.toString());
+					_c.appendLine("连接出错: " + error.toString());
 				});
 				connection.on('close', function () {
-					_c.appendLine('echo-protocol Connection Closed');
+					_c.appendLine('连接已关闭');
 				});
 				connection.on('message', function (message) {
 					if (message.type === 'utf8') {
@@ -92,6 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
 				});
 				function sendJS() {
 					if (connection.connected && text) {
+						_c.appendLine('--开始运行--');
 						connection.sendUTF(';env_web_socket = true;' + text + ';env_web_socket = undefined;');
 					}
 				}

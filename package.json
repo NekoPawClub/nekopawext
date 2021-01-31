@@ -36,7 +36,7 @@
 		"commands": [
 			{
 				"command": "nekopawext.connectDevice",
-				"title": "NekoPaw: 链接手机IP"
+				"title": "NekoPaw: 连接手机IP"
 			},
 			{
 				"command": "nekopawext.runJS",

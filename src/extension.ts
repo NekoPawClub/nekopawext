@@ -22,14 +22,16 @@ export function activate (context: vscode.ExtensionContext) {
 		wsConnector = undefined;
 	});
 	wsClient.addListener('connect', (connection) => {
+		vscode.workspace.getConfiguration().update('NekoPawExt.WebSocket.IP', webSocketIP, true);
+		vscode.workspace.getConfiguration().update('NekoPawExt.WebSocket.PORT', webSocketPORT, true);
 		vscode.window.setStatusBarMessage(`NekoPawExt已连接到${webSocketIP}:${webSocketPORT}`);
 		consoleLoger.appendLine(`设备 ${webSocketIP}:${webSocketPORT} 连接成功`);
 		if (wsConnector == undefined) {
 			wsConnector = connection;
 			wsConnector.addListener('error', (err) => { consoleLoger.appendLine(`连接出错: ${err}`); });
 			wsConnector.addListener('close', () => {
-				consoleLoger.appendLine('连接已关闭');
 				wsConnector = undefined;
+				consoleLoger.appendLine('连接已关闭');
 			});
 			wsConnector.addListener('message', (message) => {
 				if (message.type === 'utf8') consoleLoger.appendLine(message.utf8Data ?? "");
@@ -40,7 +42,6 @@ export function activate (context: vscode.ExtensionContext) {
 	context.subscriptions.push(...[
 		vscode.commands.registerCommand('nekopawext.connectDevice', () => {
 			vscode.window.showInputBox({	// 这个对象中所有参数都是可选参数
-				password: false, 			// 输入内容是否是密码
 				ignoreFocusOut: true,		// 默认false，设置为true时鼠标点击别的地方输入框不会消失
 				placeHolder: '192.168.1.5',	// 在输入框内的提示信息
 				prompt: '输入手机IP进行连接',// 在输入框下方的提示信息
@@ -59,7 +60,7 @@ export function activate (context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('nekopawext.runJS', () => {
 			consoleLoger.show();
 			if (!/^[0-9\.]+$/.test(webSocketIP ?? "")) {
-				consoleLoger.appendLine(`请先连接设备, 使用"Ctrl+Shift+P"打开菜单, 再点击"NekoPaw: 链接手机IP"`);
+				consoleLoger.appendLine(`请先连接设备, 使用"Ctrl+Shift+P"打开菜单, 再点击"NekoPaw: 连接手机IP"`);
 				return;
 			}
 

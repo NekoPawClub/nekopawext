@@ -17,14 +17,14 @@ export function activate (context: vscode.ExtensionContext) {
 	var wsClient = new WebSocketClient();
 	var wsConnector: connection | undefined = undefined;
 	wsClient.addListener('connectFailed', (err) => {
-		vscode.window.showErrorMessage("链接失败，请确保'IP是正确'且'NekoPaw服务已开启'");
-		consoleLoger?.appendLine(`连接失败: ${err}`);
+		consoleLoger?.appendLine(`[连接失败] 请检查"IP地址"且"NekoPaw服务已开启" (${err.message})`);
+		vscode.window.setStatusBarMessage(`NekoPawExt未连接`);
 		wsConnector = undefined;
 	});
 	wsClient.addListener('connect', (connection) => {
 		vscode.workspace.getConfiguration().update('NekoPawExt.WebSocket.IP', webSocketIP, true);
 		vscode.workspace.getConfiguration().update('NekoPawExt.WebSocket.PORT', webSocketPORT, true);
-		vscode.window.setStatusBarMessage(`NekoPawExt已连接到${webSocketIP}:${webSocketPORT}`);
+		vscode.window.setStatusBarMessage(`NekoPawExt已连接${webSocketIP}:${webSocketPORT}`);
 		consoleLoger.appendLine(`设备 ${webSocketIP}:${webSocketPORT} 连接成功`);
 		if (wsConnector == undefined) {
 			wsConnector = connection;
@@ -32,6 +32,7 @@ export function activate (context: vscode.ExtensionContext) {
 			wsConnector.addListener('close', () => {
 				wsConnector = undefined;
 				consoleLoger.appendLine('连接已关闭');
+				vscode.window.setStatusBarMessage(`NekoPawExt已断开`);
 			});
 			wsConnector.addListener('message', (message) => {
 				if (message.type === 'utf8') consoleLoger.appendLine(message.utf8Data ?? "");
@@ -68,6 +69,7 @@ export function activate (context: vscode.ExtensionContext) {
 			(async () => {
 				for (let i = 0; i < 3; ++i) {
 					if (wsConnector?.connected && editText) {
+						consoleLoger.clear();
 						consoleLoger.appendLine('--开始运行--');
 						wsConnector.sendUTF(';env_web_socket = true;' + editText + ';env_web_socket = undefined;');
 						break;
